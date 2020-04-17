@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebMVC.services;
+using WebMVC.ViewModels;
 
 namespace WebMVC.Controllers
 {// Catalog controller will make call to catalog api
@@ -15,11 +16,31 @@ namespace WebMVC.Controllers
         {
             _service = service;
         }
-        public async Task<IActionResult> Index(int page)
+        public async Task<IActionResult> Index(int? page, int? brandFilterApplied,
+            int? typesFilterApplied)
         {
-            var itemsOnPage = 10;       //no of items on page
-            var catalog = await _service.GetCatalogItemsAsync(page, itemsOnPage);
-            return View(catalog);    //giving all data ie catalog to view page
+            var itemsOnPage = 10;
+            //int?? 0 means if int is null ie no page is selected then select 0 page 
+            var catalog = await _service.GetCatalogItemsAsync(page ?? 0, itemsOnPage,
+                brandFilterApplied, typesFilterApplied);
+            var vm = new CatalogIndexViewModel
+            {
+                CatalogItems = catalog.Data,
+                PaginationInfo = new PaginationInfo
+                {
+                    ActualPage = page ?? 0,
+                    ItemsPerPage = itemsOnPage,
+                    TotalItems = catalog.Count,
+                    TotalPages = (int)Math.Ceiling((decimal)catalog.Count / itemsOnPage)
+                },
+                Brands = await _service.GetBrandsAsync(),// defined in CatalogServive.cs ie get data from service
+                Types = await _service.GetTypesAsync(),
+               // BrandFilterApplied = brandFilterApplied ?? 0,
+               // TypesFilterApplied = typesFilterApplied ?? 0
+            };
+
+
+            return View(vm);
 
             /*here it will try to find a view ie folder that matches the controller name ie Catalog so that all data can be rendered 
              through that page . Inside that Catalog folder it will look for page with name index*/

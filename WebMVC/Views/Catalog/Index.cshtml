@@ -1,47 +1,94 @@
-﻿@model IEnumerable<WebMVC.Models.Catalog>
-
+﻿
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Catalog";
+    @model WebMVC.ViewModels.CatalogIndexViewModel
 }
+<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+        <li data-target="#myCarousel" data-slide-to="3"></li>
+    </ol>
+    <div class="carousel-inner" role="listbox">
+        <div class="item active">
+            <img src="~/images/banner.png" alt="ASP.NET" class="img-responsive" />
+            <div class="carousel-caption" role="option">
+                <p>
+                    Incredible Engagement Rings.
+                </p>
+            </div>
+        </div>
+        <div class="item">
+            <img src="~/images/banner-2.png" alt="Visual Studio" class="img-responsive" />
+            <div class="carousel-caption" role="option">
+                <p>
+                    Diamond Engagement Rings are a thing!
+                </p>
+            </div>
+        </div>
+        <div class="item">
+            <img src="~/images/banner-3.png" alt="Package Management" class="img-responsive" />
+            <div class="carousel-caption" role="option">
+                <p>
+                    Engagement rings are epitome of luxury.
+                </p>
+            </div>
+        </div>
 
-<h1>Index</h1>
+    </div>
+    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PageSize)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PageIndex)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Count)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PageSize)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PageIndex)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Count)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<section class="esh-catalog-filters">
+    <div class="container">
+        @*<form asp-action="Index" asp-controller="Catalog" method="post">
+        <label class="esh-catalog-label" data-title="brand">
+            <!--Now items in dropdown will comw from Brands variable defined in CatalogController. And Model here is CatalogIndexViewModel
+                defined at top of page and CatalogIndexViewModel has property Brands-->
+        <select asp-for="@Model.BrandFilterApplied" asp-items="@Model.Brands" class="esh-catalog-filter"></select>
+        </label>
+        <label class="esh-catalog-label" data-title="type">
+            <select asp-for="@Model.TypesFilterApplied" asp-items="@Model.Types" class="esh-catalog-filter"></select>
+        </label>
+        <input class="esh-catalog-send" type="image" src="~/images/arrow-right.svg" />
+        </form>*@
+    </div>
+</section>
+<div class="container">
+    @if (Model.CatalogItems.Count() > 0)
+
+    {
+        <!--now we need to repeat pagination info at top and bottom of html page so we have created a component named _pagination
+            which is defined in Model.PaginationInfo ie in WebMVC.ViewModels.CatalogIndexViewModel -->
+        @Html.Partial("_pagination", Model.PaginationInfo)
+
+        <!--Now in middle of page we get data from Model.CatalogItems which is defined in ViewModels.CatalogIndexViewModels.cs 
+            and each item will have properties like price,name etc so we have made a component named _product which will be repeated for 
+            every item in loop-->
+        <div class="esh-catalog-items row">
+            @foreach (var catalogItem in Model.CatalogItems)
+            {
+                <div class="esh-catalog-item col-md-4">
+                    @Html.Partial("_product", catalogItem)
+                </div>
+            }
+        </div>
+        <!--bottom also same _pagination component is repeated-->
+        @Html.Partial("_pagination", Model.PaginationInfo)
+    }
+    else
+    {
+        <div class="esh-catalog-items row">
+            THERE ARE NO RESULTS THAT MATCH YOUR SEARCH
+        </div>
+    }
+</div>
+
