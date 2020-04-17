@@ -35,8 +35,8 @@ namespace WebMVC.Controllers
                 },
                 Brands = await _service.GetBrandsAsync(),// defined in CatalogServive.cs ie get data from service
                 Types = await _service.GetTypesAsync(),
-               // BrandFilterApplied = brandFilterApplied ?? 0,
-               // TypesFilterApplied = typesFilterApplied ?? 0
+                BrandFilterApplied = brandFilterApplied ?? 0,//BrandFilterApplied is null then leave it as 0 
+                TypesFilterApplied = typesFilterApplied ?? 0
             };
 
 

@@ -30,7 +30,7 @@ namespace WebMVC.services
         public async Task<Catalog> GetCatalogItemsAsync(int page, int size, int? brand, int? type)
         {
             //made a call to apipath and got uri in variable catalogItemsUri
-            var catalogItemsUri =ApiPaths.Catalog.GetAllCatalogItems(_baseuri, page, size);
+            var catalogItemsUri =ApiPaths.Catalog.GetAllCatalogItems(_baseuri, page, size,brand,type);
 
             /* dont do this way because anyone can implement IHttpClient so it should come from startup.cs of WebMVC
              var HttpClient = new CustomHttpClient();

@@ -49,7 +49,7 @@
 
 <section class="esh-catalog-filters">
     <div class="container">
-        @*<form asp-action="Index" asp-controller="Catalog" method="post">
+        <form asp-action="Index" asp-controller="Catalog" method="post">
         <label class="esh-catalog-label" data-title="brand">
             <!--Now items in dropdown will comw from Brands variable defined in CatalogController. And Model here is CatalogIndexViewModel
                 defined at top of page and CatalogIndexViewModel has property Brands-->
@@ -59,7 +59,7 @@
             <select asp-for="@Model.TypesFilterApplied" asp-items="@Model.Types" class="esh-catalog-filter"></select>
         </label>
         <input class="esh-catalog-send" type="image" src="~/images/arrow-right.svg" />
-        </form>*@
+        </form>
     </div>
 </section>
 <div class="container">

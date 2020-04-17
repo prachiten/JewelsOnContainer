@@ -38,7 +38,8 @@ namespace ProductCalatog.Controllers
         {
             var itemcount = await _context.CatalogItems.LongCountAsync();  // linq query  to database to get total no of items
             //CatalogItems name comes from CatalogContext DbSet
-             var items = await _context.CatalogItems.Skip(pageindex * pagesize).Take(pagesize).ToListAsync();
+             var items = await _context.CatalogItems.OrderBy(c=>c.Name).Skip(pageindex * pagesize).Take(pagesize).ToListAsync();
+            //OrderBy it sort on basis of name as we have given name in linq query and OrderBy is done before skip and take beacuse otherwise only data per page is sorted.
             //it means it will take 6 items to show on page and will skip 6 items in columns
             // initial pageindex=0 and pagesize=6 so initiallly 0 items are skipped and 6 is taken.
             // 2nd time  pageindex=1 and pagesize=6 so 6 items are skipped in table  and 6 is taken
@@ -65,14 +66,28 @@ namespace ProductCalatog.Controllers
         public async Task<IActionResult> Items(int?catalogTypeId,int?catalogBrandId,[FromQuery]int pageindex = 0, [FromQuery]int pagesize = 6)
 
         {
-            //now itemcount willdepends on on which brand and which type is selected.
-            var root= _context.CatalogItems
-            var itemcount = await _context.CatalogItems.LongCountAsync();  // linq query  to database to get total no of items
-                                                                           //CatalogItems name comes from CatalogContext DbSet
-            var items = await _context.CatalogItems.Skip(pageindex * pagesize).Take(pagesize).ToListAsync();
-            //it means it will take 6 items to show on page and will skip 6 items in columns
-            // initial pageindex=0 and pagesize=6 so initiallly 0 items are skipped and 6 is taken.
-            // 2nd time  pageindex=1 and pagesize=6 so 6 items are skipped in table  and 6 is taken
+            //now itemcount will depends on on which brand and which type is selected.
+            //line below is equivalent to Select* from table which means only selecting data from database but not fetching it
+            var root = (IQueryable<CatalogItem>)_context.CatalogItems;
+
+            //now check if user has given some value for catalogtypeid and if yes then for each catalogtype item, check CatalogTypeId
+            // given in catalogitem.cs and match it with parameter coming from route ie catalogTypeId.
+
+            if(catalogTypeId.HasValue)                                         //way to check value in nullable type
+            {
+                root = root.Where(c => c.CatalogTypeId == catalogTypeId);     //Added Where class to root.
+            }
+
+            if (catalogBrandId.HasValue) 
+            {
+                root = root.Where(c => c.CatalogBrandId == catalogBrandId);
+
+            }
+
+            // for above lines of code if user has given both brand and type then they will be appended in temp list, otherwise whatever user has given will be appended
+            var itemcount = await root.LongCountAsync();  // now how many items are there in root will be the total count.
+            var items = await root.OrderBy(c => c.Name).Skip(pageindex * pagesize).Take(pagesize).ToListAsync();
+            //based on no of items in root pagesize and no of pages left will be shown.
 
             items = ChangePictureUrl(items); // as in postman we are not able to see actual pictures
 
